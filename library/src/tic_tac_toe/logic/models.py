@@ -5,6 +5,9 @@ import re
 from dataclasses import dataclass
 from functools import cached_property
 
+from tic_tac_toe.logic.exceptions import InvalidMove
+from tic_tac_toe.logic.validators import validate_game_state, validate_grid
+
 WINNING_PATTERNS = ( # all possible winning patterns represented as strings
     "???......",
     "...???...",
@@ -29,10 +32,7 @@ class Grid:
     cells: str = " " * 9 # represents the 3x3 grid as a string of 9 characters
     
     def __post_init__(self) -> None:
-        if not re.match(r"[\sXO]{9}", self.cells):
-            raise ValueError(
-                f"Invalid grid cells, must contain 9 cells of only 'X', 'O' or ' '.)"
-            )
+        validate_grid(self)
             
     @cached_property
     def x_count(self) -> int:
@@ -57,6 +57,9 @@ class Move: # Data transfer object to carry data between functions
 class GameState:
     grid: Grid
     starting_mark: Mark = Mark("X")
+    
+    def __post_init__(self) -> None:
+        validate_game_state(self)
     
     @cached_property
     def current_mark(self) -> Mark:
@@ -95,3 +98,39 @@ class GameState:
                         for match in re.finditer(r"\?", pattern)
                     ]
         return []
+    
+    @cached_property
+    def possible_moves(self) -> list[Move]:
+        """generates a list of all possible moves from the current game state
+        and returns them as a list of Move objects.  If the game is over, an
+        empty list is returned, as there are no more possible moves."""
+        
+        moves = []
+        
+        if not self.game_over:
+            for match in re.finditer(r"\s", self.grid.cells):
+                moves.append(self.make_move_to(match.start()))
+        return moves
+    
+    def make_move_to(self, index: int) -> Move:
+        """returns a new Move object representing the move to the given
+        cell_index.  If the move is invalid, an InvalidMove exception is
+        raised."""
+        
+        if self.grid.cells[index] != " ":
+            raise InvalidMove("Cell is not empty.")
+        
+        return Move(
+            mark = self.current_mark,
+            cell_index = index,
+            before_state = self,
+            after_state = GameState(
+                Grid(
+                    self.grid.self.cells[:index]
+                    + self.current_mark
+                    + self.grid.cells[index + 1:]
+                ),
+                self.starting_mark    
+            ),
+        )
+    
