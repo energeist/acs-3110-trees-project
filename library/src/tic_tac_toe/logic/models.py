@@ -126,7 +126,7 @@ class GameState:
             before_state = self,
             after_state = GameState(
                 Grid(
-                    self.grid.self.cells[:index]
+                    self.grid.cells[:index]
                     + self.current_mark
                     + self.grid.cells[index + 1:]
                 ),
