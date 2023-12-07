@@ -2,7 +2,7 @@ import textwrap
 from typing import Iterable
 
 from tic_tac_toe.game.renderers import Renderer
-from tic_tac_toe.logic.models import validate_game_state
+from tic_tac_toe.logic.models import GameState
 
 class ConsoleRenderer(Renderer):
     def render(self, game_state: GameState) -> None:
