@@ -19,25 +19,6 @@ WINNING_STATES = [
         "?...?...?",
         "..?.?.?..",  
     ]
-
-class GameTree:
-    """This is a game tree representing the game of tic-tac-toe. It contains GameTreeNodes which
-    represent the states of the game.  The edges between the nodes represent the possible moves
-    that can be made from one state to another."""
-    
-    # represent the starting grid as a string of 9 spaces
-    STARTING_GRID = " " * 9
-       
-    # def __init__(self, root):
-    #     self.root = root
-
-    def __str__(self):
-        return str(self.root)
-
-    def __repr__(self):
-        return str(self.root)
-
-    
 class Mark(str, enum.Enum):
     
     """A representation of the two possible marks in the game."""
@@ -48,7 +29,48 @@ class Mark(str, enum.Enum):
     @property
     def other(self) -> "Mark":
         return Mark.CROSS if self is Mark.NAUGHT else Mark.NAUGHT
+    
+    
+class GameTree:
+    """This is a game tree representing the game of tic-tac-toe. It contains GameTreeNodes which
+    represent the states of the game.  The edges between the nodes represent the possible moves
+    that can be made from one state to another."""
+    
+    # represent the starting grid as a string of 9 spaces
+    STARTING_GRID = " " * 9
+       
+    # def __init__(self):
 
+    def __str__(self):
+        return str(self.root)
+
+    def __repr__(self):
+        return str(self.root)
+    
+    def play(self, starting_player = Mark("X")):
+        """This method plays a game of tic-tac-toe.  It takes a starting player as an argument and
+        returns the winning mark or None if the game is a draw."""
+        
+        # build the root node, which is a blank grid that represents the starting state of the game
+        game_state = GameTreeNode(Grid(self.STARTING_GRID), starting_player)
+        
+        # play the game until it is finished
+        while not game_state.game_finished():
+            # get the current player
+            player = game_state.current_player()
+            
+            # get the best move for the current player
+            move = self.find_best_move(game_state)
+            
+            # add the move to the list of moves
+            moves.append(move)
+            
+            # update the game state to reflect the move that was made
+            game_state = move.after_state
+        
+        # return the winning mark or None if the game is a draw
+        return game_state.winner()
+    
 
 class Grid:
     
@@ -207,7 +229,7 @@ class GameTreeNode:
     # terminal node in the game tree.  The score is 1 if the current player is the winner, -1 if the
     # current player is the loser, and 0 if the game is a draw.
     
-    def evaluate_score(self, mark):
+    def static_evaluation(self, mark):
         if self.game_finished:
             if self.draw_state:
                 return 0
@@ -218,5 +240,19 @@ class GameTreeNode:
 
 # Function main runtime code
 if __name__ == "__main__":
-    pass    
+    
+    print("This program will play a game of tic-tac-toe using two AI players as a demo.")
+    print("Both AI players are using the minimax algorithm, with alpha-beta pruning incorporated for performance.\n")
+    
+    start = time.time()
+    
+    # initialize the game tree
+    tic_tac_toe = GameTree()
+    
+    print(tic_tac_toe.play())
+    
+    end = time.time()
+    
+    print(f"Game completed in {(end - start):.3f} seconds.")
+    
     

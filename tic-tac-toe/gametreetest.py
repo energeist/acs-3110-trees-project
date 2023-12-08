@@ -258,5 +258,8 @@ class GameTreeNodeTest(unittest.TestCase):
         
         assert new_node.possible_moves() == []
         
+    def test_static_evaluation(self):
+        pass
+        
 if __name__ == '__main__':
     unittest.main()
