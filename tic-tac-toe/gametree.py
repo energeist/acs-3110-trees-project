@@ -129,6 +129,7 @@ class GameTreeNode:
             for mark in Mark:
                 if re.match(pattern.replace("?", mark), self.game_state.cells):
                     return [i for i, c in enumerate(pattern) if c == "?"]
+        return []
     
     # Helper method to determine if the game is a draw.  This is true if the board full and not
     # in a winning state.
