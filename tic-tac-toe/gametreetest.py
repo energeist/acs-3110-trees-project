@@ -1,4 +1,4 @@
-from gametree import WINNING_STATES, GameTree, GameTreeNode, Mark, Grid
+from gametree import WINNING_STATES, GameTree, GameTreeNode, Mark, Move, Grid
 import unittest
 
 class GameTreeTest(unittest.TestCase):
@@ -63,6 +63,22 @@ class GameTreeNodeTest(unittest.TestCase):
         assert not new_node.winning_cells()
         assert not new_node.draw_state()
         assert not new_node.game_finished()
+        
+        moves = new_node.possible_moves()
+        assert len(moves) == 9
+        assert type(moves[0]) == Move
+        assert type(moves[0].mark) == Mark
+        assert type(moves[0].before_state) == GameTreeNode
+        assert type(moves[0].after_state) == GameTreeNode
+        assert moves[0].mark == Mark.CROSS
+        assert moves[0].cell_index == 0
+
+        # A Move contains before and after state as GameTreeNodes, which have a game_state property that is a Grid, which has a cells property.
+        assert moves[0].before_state.game_state.cells == starting_grid.cells
+        assert moves[0].after_state.game_state.cells == "X" + starting_grid.cells[1:]
+        assert moves[1].after_state.game_state.cells == starting_grid.cells[:1] + "X" + starting_grid.cells[2:]
+        assert moves[7].after_state.game_state.cells == starting_grid.cells[:7] + "X" + starting_grid.cells[8:]
+        assert moves[8].after_state.game_state.cells == starting_grid.cells[:8] + "X"
         
     def test_an_unfinished_grid(self):
         starting_grid = Grid("XOX      ")

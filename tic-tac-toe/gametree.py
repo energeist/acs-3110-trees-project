@@ -84,6 +84,12 @@ class Move:
         self.cell_index = cell_index
         self.before_state = before_state
         self.after_state = after_state
+        
+    def __str__(self):
+        return str(f"before: {self.before_state} after: {self.after_state}")
+
+    def __repr__(self):
+        return str(f"before: {self.before_state} after: {self.after_state}")
 
 
 class GameTreeNode:
@@ -163,25 +169,26 @@ class GameTreeNode:
         # Valid moves can only be made to empty cells.
         # If the game is not over, iterate through the grid and add a move for each empty cell.
         # If the game is finished, this will return an empty list.
-        if not self.game_finished:
+        if not self.game_finished():
+            # print("not finished")
             blank_cells = re.finditer(r"\s", self.game_state.cells)
             for match in blank_cells:
-                moves.append(self.make_move_to(match.start()))
+                moves.append(self.move_to(match.start()))
         return moves
     
     # Helper method to make a move to a given cell index.  This will return a Move object that can be
     # used to generate the next game state.
     def move_to(self, index):
         
-        # fail fast - validate the proposed move
+        # validate the proposed move
         if self.game_state.cells[index] != " ":
             raise ValueError("Invalid move: cell is not empty")
-    
+
         return Move(
-            mark = self.current_player,
+            mark = self.current_player(),
             cell_index = index,
             before_state = self,
-    
+            # after_state = self
             # after_state will be a new GameTreeNode, which will take a new Grid object with the cells updated
             # to reflect the move that was made.
             after_state = GameTreeNode(
@@ -189,7 +196,7 @@ class GameTreeNode:
                     # the new grid will contain the existing cells up to the index where the move is being made...
                     self.game_state.cells[:index]
                     # ...plus the moving player's mark...
-                    + self.current_player
+                    + self.current_player()
                     # ...followed by the remaining cells.
                     + self.game_state.cells[index + 1 :]
                 )
