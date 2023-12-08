@@ -18,6 +18,8 @@ WINNING_PATTERNS = (
 )
 
 class Mark(str, enum.Enum):
+    
+    """A representation of the two possible marks in the game."""
     CROSS = "X"
     NAUGHT = "O"
 
@@ -30,6 +32,7 @@ class Grid:
     
     """A representation of the game board."""
     
+    # initialize the grid with 9 empty cells
     cells: str = " " * 9
 
     def __post_init__(self) -> None:
@@ -107,20 +110,28 @@ class GameState:
 
     @cached_property
     def possible_moves(self) -> list[Move]:
+        
+        # initialize an empty list of possible moves
         moves = []
+        
+        # if the game is not over, iterate through the grid and add a move for each empty cell
         if not self.game_over:
             for match in re.finditer(r"\s", self.grid.cells):
                 moves.append(self.make_move_to(match.start()))
         return moves
 
     def make_move_to(self, index: int) -> Move:
+        
+        # validate the proposed move
         if self.grid.cells[index] != " ":
             raise InvalidMove("Cell is not empty")
+        
+        # if the move is valid, return the Move object with the before and after states
         return Move(
-            mark=self.current_mark,
-            cell_index=index,
-            before_state=self,
-            after_state=GameState(
+            mark = self.current_mark,
+            cell_index = index,
+            before_state = self,
+            after_state = GameState(
                 Grid(
                     self.grid.cells[:index]
                     + self.current_mark
@@ -131,6 +142,7 @@ class GameState:
         )
         
     def evaluate_score(self, mark: Mark) -> int:
+        # perform static evaluation of scores for terminal game states
         if self.game_over:
             if self.tie:
                 return 0

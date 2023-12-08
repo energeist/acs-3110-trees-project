@@ -3,7 +3,7 @@ import random
 import time
 
 from tic_tac_toe.logic.exceptions import InvalidMove
-from tic_tac_toe.logic.minimax import find_best_move
+from tic_tac_toe.logic.minimax import find_best_move, pruned_find_best_move
 from tic_tac_toe.logic.models import GameState, Mark, Move
 
 class Player(metaclass=abc.ABCMeta):
@@ -45,3 +45,7 @@ class RandomComputerPlayer(ComputerPlayer):
 class MinimaxComputerPlayer(ComputerPlayer):
     def get_computer_move(self, game_state: GameState) -> Move | None:
         return find_best_move(game_state)
+    
+class PrunedMinimaxComputerPlayer(ComputerPlayer):
+    def get_computer_move(self, game_state: GameState) -> Move | None:
+        return pruned_find_best_move(game_state)
