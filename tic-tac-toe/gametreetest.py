@@ -47,7 +47,22 @@ class MoveTest(unittest.TestCase):
     pass
 
 class GameTreeNodeTest(unittest.TestCase):
-    pass
+    def test_init_and_properties(self):
+        starting_grid = Grid("XOX      ")
+        assert starting_grid.cells == "XOX      "
+        assert starting_grid.count_x() == 2
+        assert starting_grid.count_o() == 1
+        assert starting_grid.count_empty() == 6
+        
+        new_node = GameTreeNode(starting_grid)
+        assert new_node.game_state == starting_grid
+        # there are 2 Xs and 1 O on board so current player should be Mark.NAUGHT and no finish/win/draw states should register
+        assert new_node.current_player() == Mark.NAUGHT
+        assert not new_node.game_not_started()
+        assert not new_node.winner()
+        assert not new_node.winning_cells()
+        assert not new_node.draw_state()
+        assert not new_node.game_finished()
 
 if __name__ == '__main__':
     unittest.main()

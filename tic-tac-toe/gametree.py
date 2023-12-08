@@ -91,17 +91,15 @@ class GameTreeNode:
     """A node in the game tree represents a certain state of the game.  It tracks the game state,
     and the player who is to move next"""
     
-    def __init__(self, game_state, player_to_move = Mark("X"), parent=None):
+    def __init__(self, game_state, player_to_move = Mark("X")):
         self.game_state = game_state
         self.player_to_move = player_to_move
-        # self.parent = parent
-        # self.children = []
 
     def __str__(self):
-        return str(self.state)
+        return str(self.game_state)
 
     def __repr__(self):
-        return str(self.state)
+        return str(self.game_state)
     
     # Helper method to determine which player is making a move.  X always moves first,
     # so this can be determined by comparing the number of Xs and Os on the board
@@ -140,7 +138,12 @@ class GameTreeNode:
     # Helper method to determine if the game is over.  This is true if the board is in a winning state
     # or if there are no more possible moves.  
     def game_finished(self):
-        return self.winner is not None or self.draw_state
+        if self.winner() is not None:
+            return True
+        if self.winner is None:
+            if self.draw_state:
+                return True
+        return False
     
     # Method to determine the possible moves from the current game state.  This will return a list of
     # possible valid moves that can be made.    
