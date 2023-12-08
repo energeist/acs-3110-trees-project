@@ -79,8 +79,43 @@ class GameTreeNodeTest(unittest.TestCase):
         assert moves[1].after_state.game_state.cells == starting_grid.cells[:1] + "X" + starting_grid.cells[2:]
         assert moves[7].after_state.game_state.cells == starting_grid.cells[:7] + "X" + starting_grid.cells[8:]
         assert moves[8].after_state.game_state.cells == starting_grid.cells[:8] + "X"
+    
+    def test_an_unfinished_grid_with_X_moving(self):
+        starting_grid = Grid("OXOX     ")
+        assert starting_grid.cells == "OXOX     "
+        assert starting_grid.count_x() == 2
+        assert starting_grid.count_o() == 2
+        assert starting_grid.count_empty() == 5
         
-    def test_an_unfinished_grid(self):
+        new_node = GameTreeNode(starting_grid)
+        assert new_node.game_state == starting_grid
+        # there are 2 Xs and 2 Os on board so current player should be Mark.NAUGHT and no finish/win/draw states should register
+        assert new_node.current_player() == Mark.CROSS
+        assert not new_node.game_not_started()
+        assert not new_node.winner()
+        assert not new_node.winning_cells()
+        assert not new_node.draw_state()
+        assert not new_node.game_finished()
+        
+        moves = new_node.possible_moves()
+        assert len(moves) == 5
+        assert type(moves[0]) == Move
+        assert type(moves[0].mark) == Mark
+        assert type(moves[0].before_state) == GameTreeNode
+        assert type(moves[0].after_state) == GameTreeNode
+        assert moves[0].mark == Mark.CROSS
+        assert moves[0].cell_index == 4
+
+        # A Move contains before and after state as GameTreeNodes, which have a game_state property that is a Grid, which has a cells property.
+        assert moves[0].before_state.game_state.cells == starting_grid.cells
+        # print(f"'{moves[0].after_state.game_state.cells}'")
+        # print(starting_grid.cells[:moves[0].cell_index])
+        # print(f"'{starting_grid.cells[(moves[0].cell_index + 1):]}'")
+        assert moves[0].after_state.game_state.cells == starting_grid.cells[:moves[0].cell_index] + new_node.current_player() + starting_grid.cells[(moves[0].cell_index + 1):]
+        assert moves[1].after_state.game_state.cells == starting_grid.cells[:moves[1].cell_index] + new_node.current_player() + starting_grid.cells[(moves[1].cell_index + 1):]
+        assert moves[4].after_state.game_state.cells == starting_grid.cells[:moves[4].cell_index] + new_node.current_player() + starting_grid.cells[(moves[4].cell_index + 1):]  
+        
+    def test_an_unfinished_grid_with_O_moving(self):
         starting_grid = Grid("XOX      ")
         assert starting_grid.cells == "XOX      "
         assert starting_grid.count_x() == 2
@@ -96,7 +131,25 @@ class GameTreeNodeTest(unittest.TestCase):
         assert not new_node.winning_cells()
         assert not new_node.draw_state()
         assert not new_node.game_finished()
+        
+        moves = new_node.possible_moves()
+        assert len(moves) == 6
+        assert type(moves[0]) == Move
+        assert type(moves[0].mark) == Mark
+        assert type(moves[0].before_state) == GameTreeNode
+        assert type(moves[0].after_state) == GameTreeNode
+        assert moves[0].mark == Mark.NAUGHT
+        assert moves[0].cell_index == 3
 
+        # A Move contains before and after state as GameTreeNodes, which have a game_state property that is a Grid, which has a cells property.
+        assert moves[0].before_state.game_state.cells == starting_grid.cells
+        # print(f"'{moves[0].after_state.game_state.cells}'")
+        # print(starting_grid.cells[:moves[0].cell_index])
+        # print(f"'{starting_grid.cells[(moves[0].cell_index + 1):]}'")
+        assert moves[0].after_state.game_state.cells == starting_grid.cells[:moves[0].cell_index] + new_node.current_player() + starting_grid.cells[(moves[0].cell_index + 1):]
+        assert moves[1].after_state.game_state.cells == starting_grid.cells[:moves[1].cell_index] + new_node.current_player() + starting_grid.cells[(moves[1].cell_index + 1):]
+        assert moves[5].after_state.game_state.cells == starting_grid.cells[:moves[5].cell_index] + new_node.current_player() + starting_grid.cells[(moves[5].cell_index + 1):]  
+    
     def test_a_winning_grid_for_X(self):
         starting_grid = Grid("XXXOO    ")
         assert starting_grid.cells == "XXXOO    "
