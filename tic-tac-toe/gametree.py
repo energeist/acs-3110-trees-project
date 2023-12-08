@@ -5,18 +5,11 @@ import re
 import random
 import time
 
-class GameTree:
-    """This is a game tree representing the game of tic-tac-toe. It contains GameTreeNodes which
-    represent the states of the game.  The edges between the nodes represent the possible moves
-    that can be made from one state to another."""
-    
-    # represent the starting grid as a string of 9 spaces
-    STARTING_GRID = " " * 9
-    
-    # There are 8 game ending states where a win can be determined for either player
-    # other states are either a draw or the game is still in progress
-    
-    WINNING_STATES = [
+# declare winning states as a global constant\
+# There are 8 game ending states where a win can be determined for either player
+# other states are either a draw or the game is still in progress
+
+WINNING_STATES = [
         "???......",
         "...???...",
         "......???",
@@ -26,6 +19,14 @@ class GameTree:
         "?...?...?",
         "..?.?.?..",  
     ]
+
+class GameTree:
+    """This is a game tree representing the game of tic-tac-toe. It contains GameTreeNodes which
+    represent the states of the game.  The edges between the nodes represent the possible moves
+    that can be made from one state to another."""
+    
+    # represent the starting grid as a string of 9 spaces
+    STARTING_GRID = " " * 9
        
     def __init__(self, root):
         self.root = root
@@ -64,13 +65,13 @@ class Grid:
     
     # Helper methods to count the number of each type of space in the current game state
     def count_x(self):
-        return self.game_state.count("X")
+        return self.cells.count("X")
     
     def count_o(self):
-        return self.game_state.count("O")
+        return self.cells.count("O")
     
     def count_empty(self):
-        return self.game_state.count(" ")
+        return self.cells.count(" ")
     
 
 class Move:
@@ -115,7 +116,8 @@ class GameTreeNode:
     def game_not_started(self):
         return self.game_state.count_empty() == 9
     
-    # Methods to determine if the game is in a winning, losing, or draw state
+    # Method to determine if the current game state is a winning state.  This is true if the current
+    # game state's grid layout matches any of the winning patterns for a player.
     def winner(self):
         # check to see if the current game state's grid layout matches any of the winning patterns
         for pattern in WINNING_STATES:
@@ -130,19 +132,70 @@ class GameTreeNode:
                 if re.match(pattern.replace("?", mark), self.game_state.cells):
                     return [i for i, c in enumerate(pattern) if c == "?"]
     
+    # Helper method to determine if the game is a draw.  This is true if the board full and not
+    # in a winning state.
     def draw_state(self):
         return self.winner is None and self.game_state.count_empty() == 0
     
     # Helper method to determine if the game is over.  This is true if the board is in a winning state
     # or if there are no more possible moves.  
     def game_finished(self):
-        pass
-        
-    def possible_moves(self):
-        pass
+        return self.winner is not None or self.draw_state
     
-    def add_child(self, child):
-        self.children.append(child)
+    # Method to determine the possible moves from the current game state.  This will return a list of
+    # possible valid moves that can be made.    
+    def possible_moves(self):
+        # initialize an empty list of possible moves
+        moves = []
+        
+        # Valid moves can only be made to empty cells.
+        # If the game is not over, iterate through the grid and add a move for each empty cell.
+        # If the game is finished, this will return an empty list.
+        if not self.game_finished:
+            blank_cells = re.finditer(r"\s", self.game_state.cells)
+            for match in blank_cells:
+                moves.append(self.make_move_to(match.start()))
+        return moves
+    
+    # Helper method to make a move to a given cell index.  This will return a Move object that can be
+    # used to generate the next game state.
+    def move_to(self, index):
+        
+        # fail fast - validate the proposed move
+        if self.game_state.cells[index] != " ":
+            raise ValueError("Invalid move: cell is not empty")
+    
+        return Move(
+            mark = self.current_player,
+            cell_index = index,
+            before_state = self,
+    
+            # after_state will be a new GameTreeNode, which will take a new Grid object with the cells updated
+            # to reflect the move that was made.
+            after_state = GameTreeNode(
+                Grid(
+                    # the new grid will contain the existing cells up to the index where the move is being made...
+                    self.game_state.cells[:index]
+                    # ...plus the moving player's mark...
+                    + self.current_player
+                    # ...followed by the remaining cells.
+                    + self.game_state.cells[index + 1 :]
+                )
+            )
+        )
+
+    # Method to perform static evaluation of the game state.  This is used to determine the score of a
+    # terminal node in the game tree.  The score is 1 if the current player is the winner, -1 if the
+    # current player is the loser, and 0 if the game is a draw.
+    
+    def evaluate_score(self, mark):
+        if self.game_finished:
+            if self.draw_state:
+                return 0
+            if self.winner is mark:
+                return 1
+            else:
+                return -1
 
 # Function main runtime code
 if __name__ == "__main__":
