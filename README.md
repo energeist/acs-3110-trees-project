@@ -4,7 +4,7 @@ This project uses a game tree representation and the minimax algorithm to build 
 
 ## How to run this project
 
-- Clone this repo and `cd tic-tac-toe` to enter the root directory
+- Clone this repo and `cd acs-3110-trees-project/tic-tac-toe` to enter the project root directory
 - You will need to install the library package locally, so start a virtual environment with `python3 -m venv venv`, or similar
 - Install the `/library` module locally with `python3 -m pip install library`
 - To run the program, `cd frontends` to enter the frontends directory, then use `python3 -m console` to execute main() using default parameters.
