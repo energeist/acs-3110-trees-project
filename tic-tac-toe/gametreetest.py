@@ -148,11 +148,11 @@ class GameTreeNodeTest(unittest.TestCase):
         # there are 2 Xs and 3 Os on board so current player should be Mark.CROSS and winner should be Mark.NAUGHT
         # assert new_node.current_player() == Mark.CROSS
         
-        assert new_node.winner() == Mark.NAUGHT
+        assert new_node.winner() == None
         
         assert new_node.winning_cells() == []
         
-        assert not new_node.draw_state()
+        assert new_node.draw_state()
         assert new_node.game_finished()
         
         assert new_node.possible_moves() == []

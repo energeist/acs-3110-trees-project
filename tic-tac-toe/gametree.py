@@ -136,15 +136,21 @@ class GameTreeNode:
     # Helper method to determine if the game is a draw.  This is true if the board full and not
     # in a winning state.
     def draw_state(self):
-        return self.winner is None and self.game_state.count_empty() == 0
+        if self.winner():
+            return False
+        else:
+            if self.game_state.count_empty() == 0:
+                return True
+            else:
+                return False
     
     # Helper method to determine if the game is over.  This is true if the board is in a winning state
     # or if there are no more possible moves.  
     def game_finished(self):
-        if self.winner() is not None:
+        if self.winner():
             return True
-        if self.winner is None:
-            if self.draw_state:
+        if self.winner() is None:
+            if self.draw_state():
                 return True
         return False
     
