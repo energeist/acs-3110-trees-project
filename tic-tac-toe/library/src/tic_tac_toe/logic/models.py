@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from functools import cached_property
 
-from tic_tac_toe.logic.exceptions import InvalidMove
+from tic_tac_toe.logic.exceptions import InvalidMove, UnknownGameScore
 from tic_tac_toe.logic.validators import validate_game_state, validate_grid
 
 WINNING_PATTERNS = (
@@ -27,6 +27,9 @@ class Mark(str, enum.Enum):
 
 @dataclass(frozen=True)
 class Grid:
+    
+    """A representation of the game board."""
+    
     cells: str = " " * 9
 
     def __post_init__(self) -> None:
@@ -46,6 +49,9 @@ class Grid:
 
 @dataclass(frozen=True)
 class Move:
+    
+    """Representation of moves made in game which make up the edges in our game tree."""
+    
     mark: Mark
     cell_index: int
     before_state: "GameState"
@@ -53,6 +59,9 @@ class Move:
 
 @dataclass(frozen=True)
 class GameState:
+    
+    """Representation of game states that make up the nodes in our game tree"""
+    
     grid: Grid
     starting_mark: Mark = Mark("X")
 
@@ -120,3 +129,13 @@ class GameState:
                 self.starting_mark,
             ),
         )
+        
+    def evaluate_score(self, mark: Mark) -> int:
+        if self.game_over:
+            if self.tie:
+                return 0
+            if self.winner is mark:
+                return 1
+            else:
+                return -1
+        raise UnknownGameScore("Game is not over yet")
