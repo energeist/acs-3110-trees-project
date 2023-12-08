@@ -1,12 +1,11 @@
-from gametree import GameTree, GameTreeNode, Mark, Grid
+from gametree import WINNING_STATES, GameTree, GameTreeNode, Mark, Grid
 import unittest
 
 class GameTreeTest(unittest.TestCase):
-    
     def test_init_and_properties(self):
         tree = GameTree()
         assert tree.STARTING_GRID == " " * 9
-        assert tree.WINNING_STATES == [
+        assert WINNING_STATES == [
             "???......",
             "...???...",
             "......???",
@@ -18,7 +17,6 @@ class GameTreeTest(unittest.TestCase):
         ]
         
 class MarkTest(unittest.TestCase):
-    
     def test_init_and_properties(self):
         assert Mark.CROSS == "X"
         assert Mark.NAUGHT == "O"
@@ -38,6 +36,12 @@ class GridTest(unittest.TestCase):
         assert grid2.count_x() == 5
         assert grid2.count_o() == 4
         assert grid2.count_empty() == 0
+        
+        grid2 = Grid("XOX   OXO")
+        assert grid2.cells == "XOX   OXO"
+        assert grid2.count_x() == 3
+        assert grid2.count_o() == 3
+        assert grid2.count_empty() == 3
 
 class MoveTest(unittest.TestCase):
     pass

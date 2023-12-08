@@ -28,8 +28,8 @@ class GameTree:
     # represent the starting grid as a string of 9 spaces
     STARTING_GRID = " " * 9
        
-    def __init__(self, root):
-        self.root = root
+    # def __init__(self, root):
+    #     self.root = root
 
     def __str__(self):
         return str(self.root)
