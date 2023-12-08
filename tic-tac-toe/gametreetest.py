@@ -140,6 +140,22 @@ class GameTreeNodeTest(unittest.TestCase):
         assert starting_grid.count_o() == 4
         assert starting_grid.count_empty() == 0
         
-        # finish this
+        new_node = GameTreeNode(starting_grid)
+        
+        assert new_node.game_state == starting_grid
+        assert not new_node.game_not_started()
+        
+        # there are 2 Xs and 3 Os on board so current player should be Mark.CROSS and winner should be Mark.NAUGHT
+        # assert new_node.current_player() == Mark.CROSS
+        
+        assert new_node.winner() == Mark.NAUGHT
+        
+        assert new_node.winning_cells() == []
+        
+        assert not new_node.draw_state()
+        assert new_node.game_finished()
+        
+        assert new_node.possible_moves() == []
+        
 if __name__ == '__main__':
     unittest.main()
