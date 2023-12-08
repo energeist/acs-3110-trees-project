@@ -19,6 +19,9 @@ class ConsolePlayer(Player):
         return None
 
 def grid_to_index(grid: str) -> int:
+    
+    # sanitize console inputs from human players so that order of coordinates doesn't matter
+    
     if re.match(r"[abcABC][123]", grid):
         col, row = grid
     elif re.match(r"[123][abcABC]", grid):
