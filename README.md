@@ -1,8 +1,18 @@
 # ACS-3110 Advanced Trees & Sorting Final project
 
-This project uses a game tree representation and the minimax algorithm to build a simple AI on top of a tic-tac-toe game.
+This project uses a game tree representation and the minimax algorithm to build a simple AI on top of a tic-tac-toe game.  There are two implementations in this repository: one barebones implementation for the logic 
 
 ## How to run this project
+
+### Logic demo & testing suite
+
+- Clone this repo and `cd acs-3110-trees-project/tic-tac-toe` to enter the root directory
+- `python3 gametree.py` to run the logic demo showing functional outcomes of the game tree and logic
+- `python3 gametreetest.py` to execute the the test suite.
+
+### Playable application
+
+The game framework for this implementation was built with guidance from [this tutorial from Real Python](https://realpython.com/tic-tac-toe-ai-python/)
 
 - Clone this repo and `cd acs-3110-trees-project/tic-tac-toe` to enter the root directory
 - You will need to install the library package locally, so start a virtual environment with `python3 -m venv venv`, or similar
