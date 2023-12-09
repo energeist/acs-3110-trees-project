@@ -43,7 +43,7 @@ class GameTree:
     def __init__(self):
         # initialize the root node of the game tree
         self.root = GameTreeNode(Grid(self.STARTING_GRID), Mark("X"))
-        self.game_played = []
+        self.game_played = [self.root]
 
     def __str__(self):
         game_progress = ""
@@ -84,16 +84,17 @@ class GameTree:
             player = game_state.current_player()
             
             # get the best move for the current player
-            move = self.find_best_move(game_state)
+            best_move = game_state.find_best_move()
+            print(best_move)
             
-            # add the move to the list of moves
-            moves.append(move)
+            # perform the best move to update the game state
+            # game_state = best_move.after_state
             
-            # update the game state to reflect the move that was made
-            game_state = move.after_state
+            # add a board frame to the game_played list
+            self.game_played.append(best_move)
         
-        # return the winning mark or None if the game is a draw
-        return game_state.winner()
+        # return the winning mark or "draw" if the game is a draw
+        return game_state.winner() or "This game ended in a draw."
     
 
 class Grid:
@@ -132,10 +133,10 @@ class Move:
         self.after_state = after_state
         
     def __str__(self):
-        return str(f"before: {self.before_state} after: {self.after_state}")
+        return str(f"before:\n{self.before_state}\nafter:\n{self.after_state}")
 
     def __repr__(self):
-        return str(f"before: {self.before_state} after: {self.after_state}")
+        return str(f"before:\n{self.before_state}\nafter:\n{self.after_state}")
 
 
 class GameTreeNode:
@@ -251,10 +252,15 @@ class GameTreeNode:
             )
         )
 
+    # Method to make a random move, used for testing
+    def make_random_move(self):
+        random_move = self.move_to(random.choice(self.possible_moves()).cell_index)
+        return random_move
+    
     # Method to perform static evaluation of the game state.  This is used to determine the score of a
     # terminal node in the game tree.  The score is 1 if the current player is the winner, -1 if the
     # current player is the loser, and 0 if the game is a draw.
-    
+        
     def static_evaluation(self, mark):
         if self.game_finished:
             if self.draw_state:
@@ -264,7 +270,11 @@ class GameTreeNode:
             else:
                 return -1
         raise ValueError("Game is not finished")
-
+    
+    def find_best_move(self, ):
+        # uses the minimax algorithm to determine the best possible move for the current player
+        # returns a Move object with a before and after state
+        return "algorithm things"
 # Function main runtime code
 if __name__ == "__main__":
     

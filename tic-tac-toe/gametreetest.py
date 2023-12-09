@@ -143,9 +143,6 @@ class GameTreeNodeTest(unittest.TestCase):
 
         # A Move contains before and after state as GameTreeNodes, which have a game_state property that is a Grid, which has a cells property.
         assert moves[0].before_state.game_state.cells == starting_grid.cells
-        # print(f"'{moves[0].after_state.game_state.cells}'")
-        # print(starting_grid.cells[:moves[0].cell_index])
-        # print(f"'{starting_grid.cells[(moves[0].cell_index + 1):]}'")
         assert moves[0].after_state.game_state.cells == starting_grid.cells[:moves[0].cell_index] + new_node.current_player() + starting_grid.cells[(moves[0].cell_index + 1):]
         assert moves[1].after_state.game_state.cells == starting_grid.cells[:moves[1].cell_index] + new_node.current_player() + starting_grid.cells[(moves[1].cell_index + 1):]
         assert moves[5].after_state.game_state.cells == starting_grid.cells[:moves[5].cell_index] + new_node.current_player() + starting_grid.cells[(moves[5].cell_index + 1):]  
@@ -257,6 +254,22 @@ class GameTreeNodeTest(unittest.TestCase):
         assert new_node.game_finished()
         
         assert new_node.possible_moves() == []
+        
+    def test_a_random_move_on_unfinished_grid(self):
+        starting_grid = Grid("XOX      ")
+        assert starting_grid.cells == "XOX      "
+        assert starting_grid.count_x() == 2
+        assert starting_grid.count_o() == 1
+        assert starting_grid.count_empty() == 6
+        
+        new_node = GameTreeNode(starting_grid)
+        
+        random_move = new_node.make_random_move()
+
+        assert random_move.mark == Mark.NAUGHT
+        assert random_move.after_state.game_state.count_x() == 2
+        assert random_move.after_state.game_state.count_o() == 2
+        assert random_move.after_state.game_state.count_empty() == 5
         
     def test_static_evaluation(self):
         pass
