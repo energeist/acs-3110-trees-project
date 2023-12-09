@@ -110,6 +110,9 @@ class GameTree:
             # add a board frame to the game_played list
             # self.game_played.append(best_move)
         
+        # need to render last board state after game ends
+        self.render_board(game_state)
+        
         # return the winning mark or "draw" if the game is a draw
         return f"Winner is {game_state.winner()}" or "This game ended in a draw."
     
