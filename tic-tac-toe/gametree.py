@@ -99,7 +99,7 @@ class GameTree:
         return f"Winner is {game_state.winner()}" or "This game ended in a draw."
     
     def play_minimax(self):
-        """This method plays a game of tic-tac-toe.  
+        """This method plays a game of tic-tac-toe using the minimax algorithm.  
         It returns the winning mark or None if the game is a draw."""
         
         # begin playing from the starting game state stored in the root node
@@ -110,23 +110,16 @@ class GameTree:
             
             # render the current board state
             self.render_board(game_state)
-            
-            # perform a random move
-            random_move = game_state.make_random_move()
-            
-            next_state = random_move.after_state
-
-            game_state = next_state
         
             # get the best move for the current player
-            # best_move = game_state.find_best_move()
+            best_move = game_state.find_best_move()
             # print(best_move)
             
             # perform the best move to update the game state
-            # game_state = best_move.after_state
+            game_state = best_move.after_state
             
             # add a board frame to the game_played list
-            # self.game_played.append(best_move)
+            self.game_played.append(best_move)
         
         # need to render last board state after game ends
         self.render_board(game_state)
@@ -309,10 +302,56 @@ class GameTreeNode:
                 return -1
         raise ValueError("Game is not finished")
     
-    def find_best_move(self, ):
-        # uses the minimax algorithm to determine the best possible move for the current player
+    def find_best_move(self, game_state, alpha, beta, maximizing_player):
+        # uses the minimax algorithm with alpha-beta pruning to determine the best possible move for the current player
         # returns a Move object with a before and after state
-        return "algorithm things"
+        
+        # base case, return score if a leaf node (finished game) has been reached
+        if game_state.game_finished():
+            return game_state.static_evaluation(game_state.current_player())
+        
+        # recursive case with current player as maximizing player
+        if maximizing_player:
+            
+            # initialize best_score to the lowest possible score
+            best_score = -2
+            
+            # iterate through all the possible moves (children) of the current game state
+            for move in game_state.possible_moves():
+                
+                # after_state of a move is a child game state
+                next_move = move.after_state
+                
+                # recursively call find_best_move on the child game state
+                score = self.find_best_move(next_move, alpha, beta, False)
+                best_score = max(score, best_score)
+                alpha = max(alpha, best_score)
+                
+                if beta <= alpha:
+                    break
+                
+            return best_score
+            
+        # recursive case with current player as minimizing player
+        else: 
+            best_score = 2
+            
+            # iterate through all the possible moves (children) of the current game state
+            for move in game_state.possible_moves():
+                
+                # after_state of a move is a child game state
+                next_move = move.after_state
+                
+                # recursively call find_best_move on the child game state
+                score = self.find_best_move(next_move, alpha, beta, True)
+                best_score = min(score, best_score)
+                alpha = min(alpha, best_score)
+                
+                if beta <= alpha:
+                    break
+                
+            return best_score
+
 # Function main runtime code
 if __name__ == "__main__":
     
