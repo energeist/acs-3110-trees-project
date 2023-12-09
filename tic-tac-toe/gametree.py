@@ -24,6 +24,9 @@ class Mark(str, enum.Enum):
     """A representation of the two possible marks in the game."""
     CROSS = "X"
     NAUGHT = "O"
+    
+    def __str__(self):
+        return self.value
 
     # define a custom eumeration property to return the other mark 
     @property
@@ -67,9 +70,9 @@ class GameTree:
         
         time.sleep(1)
     
-    def play(self, starting_player = Mark("X")):
-        """This method plays a game of tic-tac-toe.  It takes a starting player as an argument and
-        returns the winning mark or None if the game is a draw."""
+    def play_random(self):
+        """This method plays a game of tic-tac-toe.  
+        It returns the winning mark or None if the game is a draw."""
         
         # begin playing from the starting game state stored in the root node
         game_state = self.root
@@ -77,24 +80,38 @@ class GameTree:
         # play the game until it is finished
         while not game_state.game_finished():
             
-            # render the current board state
+        # render the current board state
             self.render_board(game_state)
             
             # get the current player
-            player = game_state.current_player()
+            # player = game_state.current_player()
             
+            # perform a random move
+            random_move = game_state.make_random_move()
+            
+            next_state = random_move.after_state
+
+            game_state = next_state
+        
+        
+        # new_node = GameTreeNode(random_move.after_state, random_move.mark)
+        
+        # print(new_node)
+        
+        # self.render_board(game_state)
+        
             # get the best move for the current player
-            best_move = game_state.find_best_move()
-            print(best_move)
+            # best_move = game_state.find_best_move()
+            # print(best_move)
             
             # perform the best move to update the game state
             # game_state = best_move.after_state
             
             # add a board frame to the game_played list
-            self.game_played.append(best_move)
+            # self.game_played.append(best_move)
         
         # return the winning mark or "draw" if the game is a draw
-        return game_state.winner() or "This game ended in a draw."
+        return f"Winner is {game_state.winner()}" or "This game ended in a draw."
     
 
 class Grid:
@@ -253,6 +270,7 @@ class GameTreeNode:
         )
 
     # Method to make a random move, used for testing
+    # Returns a move object
     def make_random_move(self):
         random_move = self.move_to(random.choice(self.possible_moves()).cell_index)
         return random_move
@@ -288,7 +306,7 @@ if __name__ == "__main__":
     # initialize the game tree
     tic_tac_toe = GameTree()
     
-    print(tic_tac_toe.play())
+    print(tic_tac_toe.play_random())
     
     end = time.time()
     

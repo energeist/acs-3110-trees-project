@@ -108,9 +108,6 @@ class GameTreeNodeTest(unittest.TestCase):
 
         # A Move contains before and after state as GameTreeNodes, which have a game_state property that is a Grid, which has a cells property.
         assert moves[0].before_state.game_state.cells == starting_grid.cells
-        # print(f"'{moves[0].after_state.game_state.cells}'")
-        # print(starting_grid.cells[:moves[0].cell_index])
-        # print(f"'{starting_grid.cells[(moves[0].cell_index + 1):]}'")
         assert moves[0].after_state.game_state.cells == starting_grid.cells[:moves[0].cell_index] + new_node.current_player() + starting_grid.cells[(moves[0].cell_index + 1):]
         assert moves[1].after_state.game_state.cells == starting_grid.cells[:moves[1].cell_index] + new_node.current_player() + starting_grid.cells[(moves[1].cell_index + 1):]
         assert moves[4].after_state.game_state.cells == starting_grid.cells[:moves[4].cell_index] + new_node.current_player() + starting_grid.cells[(moves[4].cell_index + 1):]  
