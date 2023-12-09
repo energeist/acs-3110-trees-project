@@ -4,7 +4,6 @@ import enum
 import re
 import random
 import time
-import os
 
 # declare winning states as a global constant
 # There are 8 game ending states where a win can be determined for either player
@@ -35,7 +34,8 @@ class Mark(str, enum.Enum):
 class GameTree:
     """This is a game tree representing the game of tic-tac-toe. It contains GameTreeNodes which
     represent the states of the game.  The edges between the nodes represent the possible moves
-    that can be made from one state to another."""
+    that can be made from one state to another.  Handles the game loop and rendering methods in
+    this implementation"""
     
     # represent the starting grid as a string of 9 spaces
     STARTING_GRID = " " * 9
@@ -141,7 +141,7 @@ class Move:
 class GameTreeNode:
     
     """A node in the game tree represents a certain state of the game.  It tracks the game state,
-    and the player who is to move next"""
+    and the player who is to move next.  Handles the game logic in this implementation."""
     
     def __init__(self, game_state, player_to_move = Mark("X")):
         # store children as an instance attribute in a list of GameTreeNodes instead of placeholder?
@@ -150,10 +150,10 @@ class GameTreeNode:
         self.player_to_move = player_to_move
 
     def __str__(self):
-        return str(self.game_state.cells[:2] + "\n" + self.game_state.cells[3:5] + "\n" + self.game_state.cells[6:])
+        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3)
 
     def __repr__(self):
-        return str(self.game_state.cells[:2] + "\n" + self.game_state.cells[3:5] + "\n" + self.game_state.cells[6:])
+        return str(self.game_state.cells[:3] + "\n" + self.game_state.cells[3:6] + "\n" + self.game_state.cells[6:])
     
     # Helper method to determine which player is making a move.  X always moves first,
     # so this can be determined by comparing the number of Xs and Os on the board
@@ -270,6 +270,8 @@ if __name__ == "__main__":
     
     print("This program will play a game of tic-tac-toe using two AI players as a demo.")
     print("Both AI players are using the minimax algorithm, with alpha-beta pruning incorporated for performance.\n")
+    
+    time.sleep(3)
     
     start = time.time()
     
