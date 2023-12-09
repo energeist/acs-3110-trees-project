@@ -113,18 +113,19 @@ class GameTree:
         
             # get the best move for the current player 
             # maximizing player is always X in this implementation and X always moves first
-            best_move = game_state.find_best_move(game_state, -2, 2, True)
+            score, best_move = game_state.find_best_move(game_state, -2, 2, True)
             
+            print(type(best_move))
             print(best_move)
             
             # perform the best move to update the game state
-            game_state = best_move.after_state
+            game_state = best_move
             
             # add a board frame to the game_played list
             self.game_played.append(best_move)
-        
-        # need to render last board state after game ends
-        self.render_board(game_state)
+            
+            # need to render last board state after game ends
+            self.render_board(game_state)
         
         # return the winning mark or "draw" if the game is a draw
         return f"Winner is {game_state.winner()}" or "This game ended in a draw."
@@ -298,10 +299,10 @@ class GameTreeNode:
     # current player is the loser, and 0 if the game is a draw.
         
     def static_evaluation(self, mark):
-        if self.game_finished:
-            if self.draw_state:
+        if self.game_finished():
+            if self.draw_state():
                 return 0
-            if self.winner is mark:
+            if self.winner() is mark:
                 return 1
             else:
                 return -1
@@ -310,11 +311,11 @@ class GameTreeNode:
     def find_best_move(self, game_state, alpha, beta, maximizing_player, iteration = 0):
         # uses the minimax algorithm with alpha-beta pruning to determine the best possible move for the current player
         # returns a Move object with a before and after state
-        self.iteration += 1
-        print(f"iteration: {iteration}")
+        self.iteration = iteration
+        # print(f"iteration: {iteration}")
         # base case, return score if a leaf node (finished game) has been reached
         if game_state.game_finished():
-            return game_state.static_evaluation(game_state.current_player())
+            return game_state.static_evaluation(game_state.current_player()), game_state
         
         # recursive case with current player as maximizing player
         if maximizing_player:
@@ -327,16 +328,16 @@ class GameTreeNode:
                 
                 # after_state of a move is a child game state
                 next_move = move.after_state
-                
+                self.iteration += 1
                 # recursively call find_best_move on the child game state
-                score = self.find_best_move(next_move, alpha, beta, False, self.iteration)
+                score, game_state = self.find_best_move(next_move, alpha, beta, False, self.iteration)
                 best_score = max(score, best_score)
                 alpha = max(alpha, best_score)
                 
                 if beta <= alpha:
                     break
                 
-            return best_score
+            return best_score, game_state
             
         # recursive case with current player as minimizing player
         else: 
@@ -347,24 +348,25 @@ class GameTreeNode:
                 
                 # after_state of a move is a child game state
                 next_move = move.after_state
-                
+                self.iteration += 1
                 # recursively call find_best_move on the child game state
-                score = self.find_best_move(next_move, alpha, beta, True, iteration)
+                score, game_state = self.find_best_move(next_move, alpha, beta, True, self.iteration)
                 best_score = min(score, best_score)
                 alpha = min(alpha, best_score)
                 
                 if beta <= alpha:
                     break
                 
-            return best_score
+            return best_score, game_state
 
 # Function main runtime code
 if __name__ == "__main__":
     
     print("This program will play a game of tic-tac-toe using two AI players as a demo.")
-    print("Both AI players are using the minimax algorithm, with alpha-beta pruning incorporated for performance.\n")
+    print("Both AI players are using the minimax algorithm, with alpha-beta pruning incorporated for performance.")
+    print("Be warned! This will take a while to run (approximately 90 seconds...)\n")
     
-    time.sleep(3)
+    time.sleep(5)
     
     start = time.time()
     
