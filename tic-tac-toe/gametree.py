@@ -71,6 +71,34 @@ class GameTree:
         time.sleep(1)
     
     def play_random(self):
+        """This method plays a randomized game of tic-tac-toe for testing purposes.  
+        It returns the winning mark or None if the game is a draw."""
+        
+        # begin playing from the starting game state stored in the root node
+        game_state = self.root
+        
+        # play the game until it is finished
+        while not game_state.game_finished():
+            
+            # render the current board state
+            self.render_board(game_state)
+            
+            # perform a random move
+            random_move = game_state.make_random_move()
+            
+            # update the game state 
+            game_state = random_move.after_state
+
+            # add the new game state to the game history
+            self.game_played.append(game_state)
+        
+        # need to render last board state after game ends
+        self.render_board(game_state)
+        
+        # return the winning mark or "draw" if the game is a draw
+        return f"Winner is {game_state.winner()}" or "This game ended in a draw."
+    
+    def play_minimax(self):
         """This method plays a game of tic-tac-toe.  
         It returns the winning mark or None if the game is a draw."""
         
@@ -80,11 +108,8 @@ class GameTree:
         # play the game until it is finished
         while not game_state.game_finished():
             
-        # render the current board state
+            # render the current board state
             self.render_board(game_state)
-            
-            # get the current player
-            # player = game_state.current_player()
             
             # perform a random move
             random_move = game_state.make_random_move()
@@ -92,13 +117,6 @@ class GameTree:
             next_state = random_move.after_state
 
             game_state = next_state
-        
-        
-        # new_node = GameTreeNode(random_move.after_state, random_move.mark)
-        
-        # print(new_node)
-        
-        # self.render_board(game_state)
         
             # get the best move for the current player
             # best_move = game_state.find_best_move()
@@ -115,7 +133,6 @@ class GameTree:
         
         # return the winning mark or "draw" if the game is a draw
         return f"Winner is {game_state.winner()}" or "This game ended in a draw."
-    
 
 class Grid:
     
