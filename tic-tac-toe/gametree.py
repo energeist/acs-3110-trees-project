@@ -4,8 +4,9 @@ import enum
 import re
 import random
 import time
+import os
 
-# declare winning states as a global constant\
+# declare winning states as a global constant
 # There are 8 game ending states where a win can be determined for either player
 # other states are either a draw or the game is still in progress
 
@@ -39,23 +40,46 @@ class GameTree:
     # represent the starting grid as a string of 9 spaces
     STARTING_GRID = " " * 9
        
-    # def __init__(self):
+    def __init__(self):
+        # initialize the root node of the game tree
+        self.root = GameTreeNode(Grid(self.STARTING_GRID), Mark("X"))
+        self.game_played = []
 
     def __str__(self):
-        return str(self.root)
+        game_progress = ""
+        for move in self.game_played:
+            game_progress += str(move) + (" -> " if move != self.game_played[-1] else " -> end")
+        return str(game_progress)
 
     def __repr__(self):
-        return str(self.root)
+        game_progress = ""
+        for move in self.game_played:
+            game_progress += str(move) + (" -> " if move != self.game_played[-1] else " -> end")
+        return str(game_progress)
+    
+    def render_board(self, game_state):
+        """This method renders the current game board to the console."""
+        
+        # clear the console, should work for modern Windows, Mac, and Linux terminals 
+        print("\033c", end="")
+        print("Current board state:\n")
+        print(game_state)
+        
+        time.sleep(1)
     
     def play(self, starting_player = Mark("X")):
         """This method plays a game of tic-tac-toe.  It takes a starting player as an argument and
         returns the winning mark or None if the game is a draw."""
         
-        # build the root node, which is a blank grid that represents the starting state of the game
-        game_state = GameTreeNode(Grid(self.STARTING_GRID), starting_player)
+        # begin playing from the starting game state stored in the root node
+        game_state = self.root
         
         # play the game until it is finished
         while not game_state.game_finished():
+            
+            # render the current board state
+            self.render_board(game_state)
+            
             # get the current player
             player = game_state.current_player()
             
@@ -120,14 +144,16 @@ class GameTreeNode:
     and the player who is to move next"""
     
     def __init__(self, game_state, player_to_move = Mark("X")):
+        # store children as an instance attribute in a list of GameTreeNodes instead of placeholder?
+        # self.children = []
         self.game_state = game_state
         self.player_to_move = player_to_move
 
     def __str__(self):
-        return str(self.game_state)
+        return str(self.game_state.cells[:2] + "\n" + self.game_state.cells[3:5] + "\n" + self.game_state.cells[6:])
 
     def __repr__(self):
-        return str(self.game_state)
+        return str(self.game_state.cells[:2] + "\n" + self.game_state.cells[3:5] + "\n" + self.game_state.cells[6:])
     
     # Helper method to determine which player is making a move.  X always moves first,
     # so this can be determined by comparing the number of Xs and Os on the board
@@ -210,7 +236,7 @@ class GameTreeNode:
             mark = self.current_player(),
             cell_index = index,
             before_state = self,
-            # after_state = self
+            
             # after_state will be a new GameTreeNode, which will take a new Grid object with the cells updated
             # to reflect the move that was made.
             after_state = GameTreeNode(
@@ -237,6 +263,7 @@ class GameTreeNode:
                 return 1
             else:
                 return -1
+        raise ValueError("Game is not finished")
 
 # Function main runtime code
 if __name__ == "__main__":
