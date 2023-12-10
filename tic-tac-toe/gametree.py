@@ -42,12 +42,10 @@ class GameTree:
     
     # represent the starting grid as a string of 9 spaces
 
-    # STARTING_GRID = "XOXOX    "
-    # STARTING_GRID = "X        "
-    
-    STARTING_GRID = "OX  X    "
-    # random_int = random.randint(0, 8)
-    # STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
+    # STARTING_GRID = "         "
+
+    random_int = random.randint(0, 8)
+    STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
        
     def __init__(self):
         # initialize the root node of the game tree
@@ -119,7 +117,7 @@ class GameTree:
         
             # get the best move for the current player 
             # maximizing player is always X in this implementation and X always moves first
-            _, best_move = game_state.find_best_move(game_state, True)
+            _, best_move = game_state.find_best_move(game_state, game_state.current_player())
             
             # perform the best move to update the game state
             game_state = best_move.after_state
@@ -190,7 +188,7 @@ class GameTreeNode:
         self.iteration = 0
 
     def __str__(self):
-        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3 + f"\n\n static eval:{self.static_evaluation(self.current_player())}")
+        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3 + f"\n\n current player: {self.current_player()} static eval:{self.static_evaluation(self.current_player())}")
 
     def __repr__(self):
         return str(self.game_state.cells[:3] + "\n" + self.game_state.cells[3:6] + "\n" + self.game_state.cells[6:])
@@ -321,14 +319,16 @@ class GameTreeNode:
         # print(f"iteration: {iteration}")
         # base case, return score if a leaf node (finished game) has been reached
         if game_state.game_finished():
-            print(game_state)
-            time.sleep(0.5)
-            return game_state.static_evaluation(game_state.current_player()), None
+            
+            # debugger
+            # print(game_state)
+            # time.sleep(0.5)
+            return game_state.static_evaluation(self.current_player()), None
         
         best_move = None
         
         # recursive case with current player as maximizing player
-        if maximizing_player:
+        if game_state.current_player() is maximizing_player:
             
             # initialize best_score to the lowest possible score
             best_score = -2
