@@ -41,7 +41,11 @@ class GameTree:
     this implementation"""
     
     # represent the starting grid as a string of 9 spaces
-    STARTING_GRID = " " * 9
+
+    STARTING_GRID = "XOXOX    "
+    
+    # random_int = random.randint(0, 8)
+    # STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
        
     def __init__(self):
         # initialize the root node of the game tree
@@ -113,16 +117,13 @@ class GameTree:
         
             # get the best move for the current player 
             # maximizing player is always X in this implementation and X always moves first
-            score, best_move = game_state.find_best_move(game_state, -2, 2, True)
-            
-            print(type(best_move))
-            print(best_move)
+            _, best_move = game_state.find_best_move(game_state, True)
             
             # perform the best move to update the game state
-            game_state = best_move
+            game_state = best_move.after_state
             
             # add a board frame to the game_played list
-            self.game_played.append(best_move)
+            self.game_played.append(game_state)
             
             # need to render last board state after game ends
             self.render_board(game_state)
@@ -268,6 +269,8 @@ class GameTreeNode:
         # validate the proposed move
         if self.game_state.cells[index] != " ":
             raise ValueError("Invalid move: cell is not empty")
+        
+        next_player = self.current_player().other
 
         return Move(
             mark = self.current_player(),
@@ -299,6 +302,8 @@ class GameTreeNode:
     # current player is the loser, and 0 if the game is a draw.
         
     def static_evaluation(self, mark):
+        print(f"current mark: {mark}")
+        time.sleep(1)
         if self.game_finished():
             if self.draw_state():
                 return 0
@@ -308,14 +313,16 @@ class GameTreeNode:
                 return -1
         raise ValueError("Game is not finished")
     
-    def find_best_move(self, game_state, alpha, beta, maximizing_player, iteration = 0):
+    def find_best_move(self, game_state, maximizing_player):
         # uses the minimax algorithm with alpha-beta pruning to determine the best possible move for the current player
         # returns a Move object with a before and after state
-        self.iteration = iteration
+        
         # print(f"iteration: {iteration}")
         # base case, return score if a leaf node (finished game) has been reached
         if game_state.game_finished():
-            return game_state.static_evaluation(game_state.current_player()), game_state
+            return game_state.static_evaluation(game_state.current_player()), None
+        
+        best_move = None
         
         # recursive case with current player as maximizing player
         if maximizing_player:
@@ -326,38 +333,33 @@ class GameTreeNode:
             # iterate through all the possible moves (children) of the current game state
             for move in game_state.possible_moves():
                 
-                # after_state of a move is a child game state
-                next_move = move.after_state
-                self.iteration += 1
+                next_state = move.after_state
                 # recursively call find_best_move on the child game state
-                score, game_state = self.find_best_move(next_move, alpha, beta, False, self.iteration)
-                best_score = max(score, best_score)
-                alpha = max(alpha, best_score)
+                score, _ = self.find_best_move(next_state, maximizing_player)
                 
-                if beta <= alpha:
-                    break
-                
-            return best_score, game_state
+                if score > best_score:
+                    best_score = score
+                    best_move = move
+                            
+            return best_score, best_move
             
         # recursive case with current player as minimizing player
         else: 
             best_score = 2
+            best_move = None
             
             # iterate through all the possible moves (children) of the current game state
             for move in game_state.possible_moves():
-                
-                # after_state of a move is a child game state
-                next_move = move.after_state
-                self.iteration += 1
+
+                next_state = move.after_state
                 # recursively call find_best_move on the child game state
-                score, game_state = self.find_best_move(next_move, alpha, beta, True, self.iteration)
-                best_score = min(score, best_score)
-                alpha = min(alpha, best_score)
+                score, _ = self.find_best_move(next_state, maximizing_player)
                 
-                if beta <= alpha:
-                    break
-                
-            return best_score, game_state
+                if score < best_score:
+                    best_score = score
+                    best_move = move
+                                
+            return best_score, best_move
 
 # Function main runtime code
 if __name__ == "__main__":
@@ -378,5 +380,4 @@ if __name__ == "__main__":
     end = time.time()
     
     print(f"Game completed in {(end - start):.3f} seconds.")
-    
     
