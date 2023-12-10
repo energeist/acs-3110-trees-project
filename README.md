@@ -30,7 +30,9 @@ At default, the program will instantiate with the `X` marker as a human player a
 
 When playing with two AI players you should always expect the game to end in a draw!  They're both trying their best to not lose, and they're pretty good at achieving that goal.  
 
-Running with two minimax AIs takes some time to generate initial states (approximately 40 seconds), so please be patient.  AIs can be mixed and matched with varying degrees of performance enhancement depending on ordering, as can be seen from these results:
+Running with two minimax AIs takes some time to generate initial states (approximately 40 seconds), so please be patient.  For comparison, the same action in the barebones implementation without caching takes almost 120 seconds!  
+
+AIs can be mixed and matched with varying degrees of performance enhancement depending on ordering, as can be seen from these results:
 
 Runtime using two standard minimax AI players:
 
