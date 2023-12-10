@@ -42,8 +42,10 @@ class GameTree:
     
     # represent the starting grid as a string of 9 spaces
 
-    STARTING_GRID = "XOXOX    "
+    # STARTING_GRID = "XOXOX    "
+    # STARTING_GRID = "X        "
     
+    STARTING_GRID = "OX  X    "
     # random_int = random.randint(0, 8)
     # STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
        
@@ -100,7 +102,7 @@ class GameTree:
         self.render_board(game_state)
         
         # return the winning mark or "draw" if the game is a draw
-        return f"Winner is {game_state.winner()}" or "This game ended in a draw."
+        return f"Winner is {game_state.winner()}!" if game_state.winner() else "This game ended in a draw."
     
     def play_minimax(self):
         """This method plays a game of tic-tac-toe using the minimax algorithm with alpha-beta pruning for efficiency.  
@@ -188,7 +190,7 @@ class GameTreeNode:
         self.iteration = 0
 
     def __str__(self):
-        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3)
+        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3 + f"\n\n static eval:{self.static_evaluation(self.current_player())}")
 
     def __repr__(self):
         return str(self.game_state.cells[:3] + "\n" + self.game_state.cells[3:6] + "\n" + self.game_state.cells[6:])
@@ -302,8 +304,6 @@ class GameTreeNode:
     # current player is the loser, and 0 if the game is a draw.
         
     def static_evaluation(self, mark):
-        print(f"current mark: {mark}")
-        time.sleep(1)
         if self.game_finished():
             if self.draw_state():
                 return 0
@@ -311,15 +311,18 @@ class GameTreeNode:
                 return 1
             else:
                 return -1
-        raise ValueError("Game is not finished")
+        else:
+            return 0
     
-    def find_best_move(self, game_state, maximizing_player):
+    def find_best_move(self, game_state, maximizing_player, alpha = -2, beta = 2):
         # uses the minimax algorithm with alpha-beta pruning to determine the best possible move for the current player
         # returns a Move object with a before and after state
         
         # print(f"iteration: {iteration}")
         # base case, return score if a leaf node (finished game) has been reached
         if game_state.game_finished():
+            print(game_state)
+            time.sleep(0.5)
             return game_state.static_evaluation(game_state.current_player()), None
         
         best_move = None
@@ -335,11 +338,16 @@ class GameTreeNode:
                 
                 next_state = move.after_state
                 # recursively call find_best_move on the child game state
-                score, _ = self.find_best_move(next_state, maximizing_player)
+                score, _ = self.find_best_move(next_state, maximizing_player, alpha, beta)
                 
                 if score > best_score:
                     best_score = score
                     best_move = move
+                    
+                alpha = max(alpha, best_score)
+                
+                if beta <= alpha:
+                    break
                             
             return best_score, best_move
             
@@ -353,12 +361,17 @@ class GameTreeNode:
 
                 next_state = move.after_state
                 # recursively call find_best_move on the child game state
-                score, _ = self.find_best_move(next_state, maximizing_player)
+                score, _ = self.find_best_move(next_state, maximizing_player, alpha, beta)
                 
                 if score < best_score:
                     best_score = score
                     best_move = move
                                 
+                beta = min(beta, best_score)
+                
+                if beta <= alpha:
+                    break
+                
             return best_score, best_move
 
 # Function main runtime code

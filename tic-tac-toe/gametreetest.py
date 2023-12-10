@@ -289,13 +289,32 @@ class GameTreeNodeTest(unittest.TestCase):
     #     assert game.game_played[-1].game_state.count_empty() <= 4
           
     def test_static_evaluation(self):
+        # finished game with X winning should return 1 for X and -1 for O
         grid = Grid("XOXXOOX  ")
         
         new_node = GameTreeNode(grid)
-        print(new_node.draw_state())
-        print(new_node.winner())
         
-        # assert new_node.static_evaluation(Mark("X")) == 1
+        assert new_node.game_finished() == True
+        assert new_node.static_evaluation(Mark("X")) == 1
+        assert new_node.static_evaluation(Mark("O")) == -1
+        
+        # finished game with O winning should return -1 for X and 1 for O
+        grid = Grid("XXO  O XO")
+        
+        new_node = GameTreeNode(grid)
+        
+        assert new_node.game_finished() == True
+        assert new_node.static_evaluation(Mark("O")) == 1
+        assert new_node.static_evaluation(Mark("X")) == -1
+        
+        # finished game with no winner should return 0 for both X and O
+        grid = Grid("XOXOOXXXO")
+
+        new_node = GameTreeNode(grid)
+        
+        assert new_node.game_finished() == True
+        assert new_node.static_evaluation(Mark("X")) == 0
+        assert new_node.static_evaluation(Mark("O")) == 0
         
 if __name__ == '__main__':
     unittest.main()
