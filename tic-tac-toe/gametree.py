@@ -42,10 +42,14 @@ class GameTree:
     
     # represent the starting grid as a string of 9 spaces
 
-    # STARTING_GRID = "         "
-
-    random_int = random.randint(0, 8)
-    STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
+    # First move is randomized for main program call because otherwise it plays the same game every time
+    # Testing will still call an empty STARTING_GRID
+    
+    if __name__ == "__main__":
+        random_int = random.randint(0, 8)
+        STARTING_GRID = " " * random_int + "X" + " " * (8 - random_int)
+    else:
+        STARTING_GRID = " " * 9
        
     def __init__(self):
         # initialize the root node of the game tree
@@ -72,7 +76,7 @@ class GameTree:
         print("Current board state:\n")
         print(game_state)
         
-        time.sleep(1)
+        time.sleep(0.5)
     
     def play_random(self):
         """This method plays a randomized game of tic-tac-toe for testing purposes.  
@@ -129,7 +133,10 @@ class GameTree:
             self.render_board(game_state)
         
         # return the winning mark or "draw" if the game is a draw
-        return f"Winner is {game_state.winner()}" or "This game ended in a draw."
+        if game_state.winner():
+            return f"Winner is {game_state.winner()}!"
+        else:
+            return "This game ended in a draw."
 
 class Grid:
     
@@ -188,7 +195,7 @@ class GameTreeNode:
         self.iteration = 0
 
     def __str__(self):
-        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3 + f"\n\n current player: {self.current_player()} static eval:{self.static_evaluation(self.current_player())}")
+        return str(" ___ \n|" + self.game_state.cells[:3] + "|\n|" + self.game_state.cells[3:6] + "|\n|" + self.game_state.cells[6:] + "|\n " + "\u203e"*3)
 
     def __repr__(self):
         return str(self.game_state.cells[:3] + "\n" + self.game_state.cells[3:6] + "\n" + self.game_state.cells[6:])
@@ -379,7 +386,8 @@ if __name__ == "__main__":
     
     print("This program will play a game of tic-tac-toe using two AI players as a demo.")
     print("Both AI players are using the minimax algorithm, with alpha-beta pruning incorporated for performance.")
-    print("Be warned! This will take a while to run (approximately 90 seconds...)\n")
+    print("The first move has been randomized to ensure that a different game is played every time the program is run.")
+    print("Remember - both AIs are equal and fighting to win, so the game *should* always end in a draw.")
     
     time.sleep(5)
     

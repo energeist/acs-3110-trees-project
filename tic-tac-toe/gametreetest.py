@@ -267,27 +267,7 @@ class GameTreeNodeTest(unittest.TestCase):
         assert random_move.after_state.game_state.count_x() == 2
         assert random_move.after_state.game_state.count_o() == 2
         assert random_move.after_state.game_state.count_empty() == 5
-        
-    # def test_a_random_game(self):
-    #     game = GameTree()
-    #     game.play_random()
-        
-    #     # random game will always take at least 5 moves and ends in 9 moves at most
-    #     assert len(game.game_played) >= 6 # includes root node, so 5 moves is 6 nodes
-    #     assert len(game.game_played) <= 10 # includes root node, so 9 moves is 10 nodes
-        
-    #     # first node in game_played should be the root node with game_not_started() == True
-    #     assert game.game_played[0].game_not_started()
-        
-    #     # only last frame should be game_finished() == True
-    #     assert not game.game_played[-2].game_finished()
-    #     assert game.game_played[-1].game_finished()
-        
-    #     # X goes first so there should always be at least 3 Xs and 2 Os on the board
-    #     assert game.game_played[-1].game_state.count_x() >= 3
-    #     assert game.game_played[-1].game_state.count_o() >= 2
-    #     assert game.game_played[-1].game_state.count_empty() <= 4
-          
+    
     def test_static_evaluation(self):
         # finished game with X winning should return 1 for X and -1 for O
         grid = Grid("XOXXOOX  ")
@@ -315,6 +295,26 @@ class GameTreeNodeTest(unittest.TestCase):
         assert new_node.game_finished() == True
         assert new_node.static_evaluation(Mark("X")) == 0
         assert new_node.static_evaluation(Mark("O")) == 0
+                
+    # def test_a_random_game(self):
+    #     game = GameTree()
+    #     game.play_random()
+        
+    #     # random game will always take at least 5 moves and ends in 9 moves at most
+    #     assert len(game.game_played) >= 6 # includes root node, so 5 moves is 6 nodes
+    #     assert len(game.game_played) <= 10 # includes root node, so 9 moves is 10 nodes
+        
+    #     # first node in game_played should be the root node with game_not_started() == True
+    #     assert game.game_played[0].game_not_started()
+        
+    #     # only last frame should be game_finished() == True
+    #     assert not game.game_played[-2].game_finished()
+    #     assert game.game_played[-1].game_finished()
+        
+    #     # X goes first so there should always be at least 3 Xs and 2 Os on the board
+    #     assert game.game_played[-1].game_state.count_x() >= 3
+    #     assert game.game_played[-1].game_state.count_o() >= 2
+    #     assert game.game_played[-1].game_state.count_empty() <= 4
         
 if __name__ == '__main__':
     unittest.main()
